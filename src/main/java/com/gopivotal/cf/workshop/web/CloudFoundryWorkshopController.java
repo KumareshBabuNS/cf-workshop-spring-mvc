@@ -5,21 +5,19 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import org.cloudfoundry.org.codehaus.jackson.JsonParseException;
-import org.cloudfoundry.org.codehaus.jackson.impl.JsonReadContext;
-import org.cloudfoundry.org.codehaus.jackson.map.JsonMappingException;
-import org.cloudfoundry.org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.Cloud;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.gopivotal.cf.workshop.entity.Attendee;
 import com.gopivotal.cf.workshop.entity.Session;
 import com.gopivotal.cf.workshop.repository.AttendeeRepository;
@@ -39,6 +37,8 @@ public class CloudFoundryWorkshopController {
 	
 	@Autowired
 	private SessionRepository sessionRepository;
+	
+	@Autowired (required=false) Cloud cloud;
 
 	/**
 	 * Gets basic environment information.  This is the application's
@@ -60,15 +60,15 @@ public class CloudFoundryWorkshopController {
 		String port = System.getenv("PORT");
 		model.addAttribute("port", port);
 
-		String vcapApplication = System.getenv("VCAP_APPLICATION");
-		ObjectMapper mapper = new ObjectMapper();
-		if (vcapApplication != null) {
-			Map vcapMap = mapper.readValue(vcapApplication, Map.class);
-			model.addAttribute("vcapApplication", vcapMap);
-		}
-		
 		String vcapServices = System.getenv("VCAP_SERVICES");
 		model.addAttribute("vcapServices", vcapServices);
+		
+		if (cloud == null ){
+			model.addAttribute("isCloudEnvironment",false);
+		} else {
+			model.addAttribute("isCloudEnvironment",true);
+			model.addAttribute("vcapApplication", cloud.getApplicationInstanceInfo().getProperties());
+		}
 		
 		logger.info("Current date and time = [{}], port = [{}].", serverTime, port);
 
