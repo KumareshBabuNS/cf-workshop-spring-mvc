@@ -35,3 +35,6 @@ In Pivotal CF, it is assumed that a postgres service will be used.  If another
 service type, such as MySQL, is to be used, update the POM file and the manifest
 before pushing.
 
+Stack
+-------
+The application uses Spring 4, Spring Boot, Spring Data JPA, Spring Cloud, and Thymeleaf.  It can be packaged and run as either a JAR or a WAR, and it can run in cloud or non-cloud environments.
