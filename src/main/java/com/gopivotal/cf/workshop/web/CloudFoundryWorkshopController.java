@@ -68,6 +68,8 @@ public class CloudFoundryWorkshopController {
 		} else {
 			model.addAttribute("isCloudEnvironment",true);
 			model.addAttribute("vcapApplication", cloud.getApplicationInstanceInfo().getProperties());
+			logger.info("VCAP_SERVICES [{}] ", vcapServices);
+			logger.info("VCAP_APPLICATION [{}] ", System.getenv("VCAP_APPLICATION"));
 		}
 		
 		logger.info("Current date and time = [{}], port = [{}].", serverTime, port);
